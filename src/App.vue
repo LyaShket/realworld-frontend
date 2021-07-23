@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <app-header />
+    <router-view />
   </div>
 </template>
 
