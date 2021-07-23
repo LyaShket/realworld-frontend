@@ -28,9 +28,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.error-messages {
-  text-align: left;
-}
-</style>
