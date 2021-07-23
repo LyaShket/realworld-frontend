@@ -21,7 +21,7 @@
             class="ng-pristine ng-valid ng-valid-email"
             @submit.prevent="submit"
           >
-            <fieldset ng-disabled="$ctrl.isSubmitting">
+            <fieldset>
               <fieldset class="form-group">
                 <input
                   class="form-control form-control-lg ng-pristine ng-valid ng-empty ng-touched"
