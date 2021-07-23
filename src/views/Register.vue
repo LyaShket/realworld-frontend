@@ -97,7 +97,7 @@ export default {
           }
         })
         .then(response => {
-          this.$store.commit("setCurrenUser", response.data.user);
+          this.$store.commit("setCurrentUser", response.data.user);
           this.$router.push({ name: "home" });
         })
         .catch(error => {
