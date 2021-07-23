@@ -7,7 +7,7 @@
         </router-link>
 
         <template v-if="currentUser">
-          <ul class="nav navbar-nav pull-xs-right" style="display: none;">
+          <ul class="nav navbar-nav pull-xs-right" style="display: inherit;">
             <li class="nav-item">
               <router-link
                 class="nav-link"
