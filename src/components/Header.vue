@@ -2,104 +2,76 @@
   <header class="ng-scope ng-isolate-scope">
     <nav class="navbar navbar-light">
       <div class="container">
-        <a
-          class="navbar-brand ng-binding"
-          ui-sref="app.home"
-          ng-bind="::$ctrl.appName | lowercase"
-          href="#/"
-          >conduit</a
-        >
+        <router-link class="navbar-brand ng-binding" :to="{ name: 'home' }">
+          conduit
+        </router-link>
 
-        <!-- Show this for logged out users -->
-        <ul
-          show-authed="false"
-          class="nav navbar-nav pull-xs-right"
-          style="display: inherit;"
-        >
-          <li class="nav-item">
-            <a
-              class="nav-link active"
-              ui-sref-active="active"
-              ui-sref="app.home"
-              href="#/"
-            >
-              Home
-            </a>
-          </li>
+        <template v-if="currentUser">
+          <ul class="nav navbar-nav pull-xs-right" style="display: none;">
+            <li class="nav-item">
+              <router-link
+                class="nav-link"
+                :to="{ name: 'home' }"
+                active-class="active"
+                exact
+              >
+                Home
+              </router-link>
+            </li>
 
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              ui-sref-active="active"
-              ui-sref="app.login"
-              href="#/login"
-            >
-              Sign in
-            </a>
-          </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#/editor/">
+                <i class="ion-compose"></i>&nbsp;New Article
+              </a>
+            </li>
 
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              ui-sref-active="active"
-              ui-sref="app.register"
-              href="#/register"
-            >
-              Sign up
-            </a>
-          </li>
-        </ul>
+            <li class="nav-item">
+              <a class="nav-link" href="#/settings">
+                <i class="ion-gear-a"></i>&nbsp;Settings
+              </a>
+            </li>
 
-        <!-- Show this for logged in users -->
-        <ul
-          show-authed="true"
-          class="nav navbar-nav pull-xs-right"
-          style="display: none;"
-        >
-          <li class="nav-item">
-            <a
-              class="nav-link active"
-              ui-sref-active="active"
-              ui-sref="app.home"
-              href="#/"
-            >
-              Home
-            </a>
-          </li>
+            <li class="nav-item">
+              <a class="nav-link ng-binding" href="#/@">
+                <img class="user-pic" />
+              </a>
+            </li>
+          </ul>
+        </template>
+        <template v-else>
+          <ul class="nav navbar-nav pull-xs-right" style="display: inherit;">
+            <li class="nav-item">
+              <router-link
+                class="nav-link"
+                :to="{ name: 'home' }"
+                active-class="active"
+                exact
+              >
+                Home
+              </router-link>
+            </li>
 
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              ui-sref-active="active"
-              ui-sref="app.editor"
-              href="#/editor/"
-            >
-              <i class="ion-compose"></i>&nbsp;New Article
-            </a>
-          </li>
+            <li class="nav-item">
+              <router-link
+                class="nav-link"
+                :to="{ name: 'login' }"
+                active-class="active"
+              >
+                Sign in
+              </router-link>
+            </li>
 
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              ui-sref-active="active"
-              ui-sref="app.settings"
-              href="#/settings"
-            >
-              <i class="ion-gear-a"></i>&nbsp;Settings
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a
-              class="nav-link ng-binding"
-              ui-sref-active="active"
-              ui-sref="app.profile.main({ username: $ctrl.currentUser.username })"
-              href="#/@"
-            >
-              <img class="user-pic" />
-            </a>
-          </li>
-        </ul>
+            <li class="nav-item">
+              <router-link
+                class="nav-link"
+                :to="{ name: 'register' }"
+                active-class="active"
+              >
+                Sign up
+              </router-link>
+            </li>
+          </ul>
+        </template>
       </div>
     </nav>
   </header>
@@ -107,7 +79,12 @@
 
 <script>
 export default {
-  name: "AppHeader"
+  name: "AppHeader",
+  computed: {
+    currentUser() {
+      return this.$store.state.currentUser;
+    }
+  }
 };
 </script>
 
