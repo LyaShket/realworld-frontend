@@ -7,7 +7,7 @@
             Sign up
           </h1>
           <p class="text-xs-center">
-            <router-link :to="{ name: 'login' }">
+            <router-link :to="{ name: 'register' }">
               Need an account?
             </router-link>
           </p>
