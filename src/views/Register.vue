@@ -12,9 +12,10 @@
             </router-link>
           </p>
 
-          <list-errors class="ng-isolate-scope">
-            <ul class="error-messages ng-hide"></ul>
-          </list-errors>
+          <app-validate-errors
+            v-if="validateErrors"
+            :validateErrors="validateErrors"
+          />
 
           <form
             class="ng-pristine ng-valid ng-valid-email"
@@ -27,6 +28,7 @@
                   type="text"
                   placeholder="Username"
                   v-model="username"
+                  :disabled="isSubmitting"
                 />
               </fieldset>
 
@@ -36,6 +38,7 @@
                   type="email"
                   placeholder="Email"
                   v-model="email"
+                  :disabled="isSubmitting"
                 />
               </fieldset>
 
@@ -45,12 +48,14 @@
                   type="password"
                   placeholder="Password"
                   v-model="password"
+                  :disabled="isSubmitting"
                 />
               </fieldset>
 
               <button
                 class="btn btn-lg btn-primary pull-xs-right ng-binding"
                 type="submit"
+                :disabled="isSubmitting"
               >
                 Sign up
               </button>
@@ -64,28 +69,42 @@
 
 <script>
 import axios from "@/api/axios";
+import AppValidateErrors from "@/components/ValidateErrors";
 
 export default {
   name: "AppRegister",
+  components: {
+    AppValidateErrors
+  },
   data() {
     return {
       username: "",
       email: "",
-      password: ""
+      password: "",
+      validateErrors: null,
+      isSubmitting: false
     };
   },
   methods: {
     submit() {
-      axios.post("users", {
-        user: {
-          username: this.username,
-          email: this.email,
-          password: this.password
-        }
-      });
+      this.isSubmitting = true;
+      axios
+        .post("users", {
+          user: {
+            username: this.username,
+            email: this.email,
+            password: this.password
+          }
+        })
+        .then(response => {
+          this.$store.commit("setCurrenUser", response.data.user);
+          this.$router.push({ name: "home" });
+        })
+        .catch(error => {
+          this.validateErrors = error.response.data.errors;
+          this.isSubmitting = false;
+        });
     }
   }
 };
 </script>
-
-<style></style>
