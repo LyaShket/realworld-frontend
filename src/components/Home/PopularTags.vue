@@ -35,7 +35,6 @@ export default {
   },
   created() {
     axios.get("tags").then(response => {
-      this.isLoading = true;
       this.tags = response.data.tags;
     });
   }
