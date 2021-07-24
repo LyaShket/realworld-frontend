@@ -4,6 +4,7 @@ import AppRegister from "@/views/Register";
 import AppLogin from "@/views/Login";
 import AppHome from "@/views/Home";
 import AppEditor from "@/views/Editor";
+import AppSettings from "@/views/Settings";
 
 Vue.use(VueRouter);
 
@@ -31,7 +32,7 @@ const routes = [
   {
     path: "/settings",
     name: "settings",
-    component: null
+    component: AppSettings
   },
   {
     path: "/@:username",
