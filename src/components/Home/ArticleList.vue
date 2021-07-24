@@ -1,45 +1,75 @@
 <template>
   <div class="ng-isolate-scope">
-    <div class="article-preview">
-      <div class="article-meta">
-        <a href="#/@ghadagamal">
-          <img
-            src="https://static.productionready.io/images/smiley-cyrus.jpg"
-          />
-        </a>
+    <template v-if="articles && articles.length > 0">
+      <div
+        class="article-preview"
+        v-for="article in articles"
+        :key="article.slug"
+      >
+        <div class="article-meta">
+          <router-link
+            :to="{
+              name: 'user',
+              params: { username: article.author.username }
+            }"
+          >
+            <img :src="article.author.image" />
+          </router-link>
 
-        <div class="info">
-          <a class="author ng-binding" href="#/@ghadagamal">ghadagamal</a>
-          <span class="date ng-binding">July 24, 2021</span>
+          <div class="info">
+            <router-link
+              class="author ng-binding"
+              :to="{
+                name: 'user',
+                params: { username: article.author.username }
+              }"
+            >
+              {{ article.author.username }}
+            </router-link>
+            <span class="date ng-binding">{{ article.createdAt }}</span>
+          </div>
+
+          <button
+            class="pull-xs-right ng-scope ng-isolate-scope btn btn-sm"
+            :class="article.favorited ? 'btn-primary' : 'btn-outline-primary'"
+            @click="toggleFavorite(article)"
+            :disabled="article.isWaitingToggle"
+          >
+            <i class="ion-heart"></i>
+            <span class="ng-binding ng-scope">
+              {{ article.favoritesCount }}
+            </span>
+          </button>
         </div>
 
-        <button
-          class="pull-xs-right ng-scope ng-isolate-scope btn btn-sm btn-outline-primary"
+        <router-link
+          class="preview-link"
+          :to="{
+            name: 'article',
+            params: { slug: article.slug }
+          }"
         >
-          <i class="ion-heart"></i>
-          <span class="ng-binding ng-scope">
-            0
-          </span>
-        </button>
+          <h1 class="ng-binding">{{ article.title }}</h1>
+          <p class="ng-binding">
+            {{ article.body }}
+          </p>
+          <span>Read more...</span>
+          <ul class="tag-list" v-if="article.tagList.length > 0">
+            <li
+              class="tag-default tag-pill tag-outline ng-binding ng-scope"
+              v-for="tag in article.tagList"
+              :key="tag"
+            >
+              {{ tag }}
+            </li>
+          </ul>
+        </router-link>
       </div>
-
-      <a class="preview-link" href="#/article/1-h70edn">
-        <h1 class="ng-binding">1</h1>
-        <p class="ng-binding">
-          1
-        </p>
-        <span>Read more...</span>
-        <ul class="tag-list">
-          <li class="tag-default tag-pill tag-outline ng-binding ng-scope">
-            test-automation
-          </li>
-        </ul>
-      </a>
-    </div>
-    <div class="article-preview">
+    </template>
+    <div class="article-preview" v-else-if="!articles">
       Loading articles...
     </div>
-    <div class="article-preview">
+    <div class="article-preview" v-else>
       No articles are here... yet.
     </div>
 
@@ -57,18 +87,71 @@
 </template>
 
 <script>
+import axios from "@/api/axios";
+
 export default {
   name: "AppArticleList",
   data() {
     return {
-      tags: null
+      articles: null
     };
   },
   created() {
-    axios.get("articles").then(response => {
-      this.isLoading = true;
-      this.tags = response.data.tags;
+    let requestParams = {};
+    if (this.$store.state.authToken !== "") {
+      requestParams = {
+        headers: {
+          authorization: "Token " + this.$store.state.authToken
+        }
+      };
+    }
+    axios.get("articles?limit=10", requestParams).then(response => {
+      const articles = response.data.articles;
+      articles.map(article => (article.isWaitingToggle = false));
+      this.articles = articles;
     });
+  },
+  methods: {
+    toggleFavorite(toggleArticle) {
+      toggleArticle.isWaitingToggle = true;
+      if (toggleArticle.favorited) {
+        axios
+          .delete(`articles/${toggleArticle.slug}/favorite`, {
+            headers: {
+              authorization: "Token " + this.$store.state.authToken
+            }
+          })
+          .then(response => {
+            this.articles.map(article => {
+              if (article === toggleArticle) {
+                article.favorited = false;
+                article.favoritesCount = response.data.article.favoritesCount;
+                article.isWaitingToggle = false;
+              }
+            });
+          });
+      } else {
+        axios
+          .post(
+            `articles/${toggleArticle.slug}/favorite`,
+            {},
+            {
+              headers: {
+                authorization: "Token " + this.$store.state.authToken
+              }
+            }
+          )
+          .then(response => {
+            this.articles.map(article => {
+              if (article === toggleArticle) {
+                article.favorited = true;
+                article.favoritesCount = response.data.article.favoritesCount;
+                article.isWaitingToggle = false;
+              }
+            });
+          });
+      }
+    }
   }
 };
 </script>
