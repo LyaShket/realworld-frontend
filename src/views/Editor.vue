@@ -6,7 +6,7 @@
           <div class="col-md-10 offset-md-1 col-xs-12">
             ERRORS
 
-            <form class="ng-pristine ng-valid" @submit="submit">
+            <form class="ng-pristine ng-valid" @submit.prevent="submit">
               <fieldset>
                 <fieldset class="form-group">
                   <input
