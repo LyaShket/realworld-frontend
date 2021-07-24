@@ -25,15 +25,27 @@ export default new Vuex.Store({
       localStorage.setItem("authToken", authToken);
     },
     getCurrentUser(context) {
-      axios
-        .get("user", {
-          headers: {
-            authorization: "Token " + context.state.authToken
-          }
-        })
-        .then(response => {
-          context.commit("setCurrentUser", response.data.user);
-        });
+      return new Promise(resolve => {
+        axios
+          .get("user", {
+            headers: {
+              authorization: "Token " + context.state.authToken
+            }
+          })
+          .then(response => {
+            context.commit("setCurrentUser", response.data.user);
+            resolve();
+          })
+          .catch(() => {
+            context.commit("setCurrentUser", null);
+            context.commit("setAuthToken", "");
+            resolve();
+          });
+      });
+    },
+    logout(context) {
+      context.commit("setCurrentUser", null);
+      context.commit("setAuthToken", "");
     }
   },
   modules: {}
