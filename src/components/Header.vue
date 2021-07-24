@@ -33,7 +33,8 @@
 
             <li class="nav-item">
               <a class="nav-link ng-binding" href="#/@">
-                <img class="user-pic" />
+                <img class="user-pic" :src="currentUser.image" />
+                {{ currentUser.username }}
               </a>
             </li>
           </ul>
@@ -84,6 +85,9 @@ export default {
     currentUser() {
       return this.$store.state.currentUser;
     }
+  },
+  created() {
+    this.$store.dispatch("getCurrentUser");
   }
 };
 </script>
