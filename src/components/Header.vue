@@ -20,22 +20,28 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="#/editor/">
+              <router-link class="nav-link" :to="{ name: 'editor' }">
                 <i class="ion-compose"></i>&nbsp;New Article
-              </a>
+              </router-link>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="#/settings">
+              <router-link class="nav-link" :to="{ name: 'settings' }">
                 <i class="ion-gear-a"></i>&nbsp;Settings
-              </a>
+              </router-link>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link ng-binding" href="#/@">
+              <router-link
+                class="nav-link ng-binding"
+                :to="{
+                  name: 'user',
+                  params: { username: currentUser.username }
+                }"
+              >
                 <img class="user-pic" :src="currentUser.image" />
                 {{ currentUser.username }}
-              </a>
+              </router-link>
             </li>
           </ul>
         </template>
