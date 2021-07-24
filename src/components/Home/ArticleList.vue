@@ -36,11 +36,9 @@
         </ul>
       </a>
     </div>
-
     <div class="article-preview">
       Loading articles...
     </div>
-
     <div class="article-preview">
       No articles are here... yet.
     </div>
@@ -60,7 +58,18 @@
 
 <script>
 export default {
-  name: "AppArticleList"
+  name: "AppArticleList",
+  data() {
+    return {
+      tags: null
+    };
+  },
+  created() {
+    axios.get("articles").then(response => {
+      this.isLoading = true;
+      this.tags = response.data.tags;
+    });
+  }
 };
 </script>
 
