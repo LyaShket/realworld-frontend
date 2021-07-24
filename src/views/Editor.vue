@@ -112,8 +112,10 @@ export default {
   },
   methods: {
     addTag() {
-      this.tagList.push(this.tag);
-      this.tag = "";
+      if (this.tagList.indexOf(this.tag) === -1) {
+        this.tagList.push(this.tag);
+        this.tag = "";
+      }
     },
     removeTag(tagName) {
       this.tagList = this.tagList.filter(i => i !== tagName);
