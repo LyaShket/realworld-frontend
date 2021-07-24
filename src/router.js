@@ -38,6 +38,11 @@ const routes = [
     path: "/@:username",
     name: "user",
     component: null
+  },
+  {
+    path: "/article/:slug",
+    name: "article",
+    component: null
   }
 ];
 
