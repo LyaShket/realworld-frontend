@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import AppRegister from "@/views/Register";
 import AppLogin from "@/views/Login";
 import AppHome from "@/views/Home";
+import AppEditor from "@/views/Editor";
 
 Vue.use(VueRouter);
 
@@ -25,7 +26,7 @@ const routes = [
   {
     path: "/editor",
     name: "editor",
-    component: null
+    component: AppEditor
   },
   {
     path: "/settings",
