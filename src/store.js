@@ -46,6 +46,7 @@ export default new Vuex.Store({
     logout(context) {
       context.commit("setCurrentUser", null);
       context.commit("setAuthToken", "");
+      localStorage.removeItem("authToken");
     }
   },
   modules: {}
