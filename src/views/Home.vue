@@ -119,13 +119,12 @@
             <p>Popular Tags</p>
 
             <div class="tag-list" ng-show="$ctrl.tags">
-              <a href="" class="tag-default tag-pill ng-binding ng-scope"
-                >dragons</a
-              ><!-- end ngRepeat: tagName in $ctrl.tags --><a
-                href=""
-                class="tag-default tag-pill ng-binding ng-scope"
-                >butt</a
-              ><!-- end ngRepeat: tagName in $ctrl.tags -->
+              <a href="" class="tag-default tag-pill ng-binding ng-scope">
+                dragons
+              </a>
+              <a href="" class="tag-default tag-pill ng-binding ng-scope">
+                butt
+              </a>
             </div>
 
             <div class="ng-hide">
