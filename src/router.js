@@ -5,6 +5,7 @@ import AppLogin from "@/views/Login";
 import AppHome from "@/views/Home";
 import AppEditor from "@/views/Editor";
 import AppSettings from "@/views/Settings";
+import AppArticle from "@/views/Article";
 
 Vue.use(VueRouter);
 
@@ -42,7 +43,7 @@ const routes = [
   {
     path: "/article/:slug",
     name: "article",
-    component: null
+    component: AppArticle
   }
 ];
 
