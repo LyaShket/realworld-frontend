@@ -31,14 +31,7 @@
         class="nav-item"
         v-if="articleListType === $options.ARTICLE_LIST_TYPES.TAG"
       >
-        <button
-          class="nav-link"
-          :class="{
-            active: articleListType === $options.ARTICLE_LIST_TYPES.TAG
-          }"
-          @click="setArticleListType($options.ARTICLE_LIST_TYPES.TAG)"
-          :disabled="articleListType === $options.ARTICLE_LIST_TYPES.TAG"
-        >
+        <button class="nav-link active" disabled>
           <i class="ion-pound"></i> {{ tag }}
         </button>
       </li>
