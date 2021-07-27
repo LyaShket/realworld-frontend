@@ -100,9 +100,6 @@ export default {
     currentUser() {
       return this.$store.state.currentUser;
     }
-  },
-  created() {
-    this.$store.dispatch("getCurrentUser");
   }
 };
 </script>

@@ -8,7 +8,6 @@
         <p>A place to share your knowledge.</p>
       </div>
     </div>
-
     <div class="container page">
       <div class="row">
         <div class="col-md-9">
