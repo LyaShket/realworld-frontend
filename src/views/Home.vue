@@ -14,6 +14,7 @@
         <div class="col-md-9">
           <app-tabs
             :articleListType="articleListType"
+            :tag="tag"
             @set-article-list-type="setArticleListType"
           />
           <app-article-list :articles="articles" />
@@ -45,7 +46,6 @@ export default {
       limit: 10,
       offset: 0,
       articleListType: ARTICLE_LIST_TYPES.GLOBAL_FEED,
-
       articles: null
     };
   },

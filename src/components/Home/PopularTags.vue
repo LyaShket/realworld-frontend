@@ -9,6 +9,7 @@
           class="tag-default tag-pill ng-binding ng-scope"
           v-for="tag in tags"
           :key="tag"
+          @click.prevent="setTag(tag)"
         >
           {{ tag }}
         </a>
@@ -37,6 +38,11 @@ export default {
     axios.get("tags").then(response => {
       this.tags = response.data.tags;
     });
+  },
+  methods: {
+    setTag(tag) {
+      this.$emit("set-tag", tag);
+    }
   }
 };
 </script>
