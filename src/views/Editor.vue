@@ -144,11 +144,13 @@ export default {
     submit() {
       this.isSubmitting = true;
       let request = axios.post;
+      let link = "articles";
       if (this.$route.params.slug) {
         request = axios.put;
+        link = `articles/${this.$route.params.slug}`;
       }
       request(
-        "articles",
+        link,
         {
           body: this.body,
           description: this.description,
