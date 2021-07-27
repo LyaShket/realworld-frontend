@@ -24,12 +24,12 @@
 
     <!-- If current user is the author, show edit/delete buttons -->
     <span v-if="currentUser && currentUser.username === author.username">
-      <a
+      <router-link
         class="btn btn-outline-secondary btn-sm"
-        href="#/editor/article-created-by-cypress-test-kn4ycy"
+        :to="{ name: 'editor_slug', params: { slug: slug } }"
       >
         <i class="ion-edit"></i> Edit Article
-      </a>
+      </router-link>
 
       <button
         class="btn btn-outline-danger btn-sm"
@@ -96,8 +96,12 @@ export default {
     },
     favoritesCount: {
       type: Number,
-      require: false,
+      required: false,
       default: 0
+    },
+    slug: {
+      type: String,
+      required: true
     }
   }
 };

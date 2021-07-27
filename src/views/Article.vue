@@ -12,6 +12,7 @@
           :createdAt="createdAt"
           :favorited="favorited"
           :favoritesCount="favoritesCount"
+          :slug="slug"
         />
       </div>
     </div>
@@ -44,6 +45,7 @@
           :createdAt="createdAt"
           :favorited="favorited"
           :favoritesCount="favoritesCount"
+          :slug="slug"
         />
       </div>
 
@@ -136,7 +138,8 @@ export default {
       favorited: false,
       favoritesCount: 0,
       tagList: [],
-      title: ""
+      title: "",
+      slug: ""
     };
   },
   computed: {
@@ -164,6 +167,7 @@ export default {
         this.favoritesCount = response.data.article.favoritesCount;
         this.tagList = response.data.article.tagList;
         this.title = response.data.article.title;
+        this.slug = response.data.article.slug;
 
         this.isLoading = false;
       });

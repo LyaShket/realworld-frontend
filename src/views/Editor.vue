@@ -1,5 +1,5 @@
 <template>
-  <div class="ng-scope">
+  <div class="ng-scope" v-if="!isLoading">
     <div class="editor-page ng-scope">
       <div class="container page">
         <div class="row">
@@ -100,13 +100,34 @@ export default {
       tagList: [],
 
       isSubmitting: false,
-      validateErrors: null
+      validateErrors: null,
+
+      isLoading: true
     };
   },
   created() {
     this.$store.dispatch("getCurrentUser").then(() => {
       if (this.currentUser === null) {
         this.$router.push({ name: "home" });
+      } else {
+        if (this.$route.params.slug) {
+          axios
+            .get(`articles/${this.$route.params.slug}`, {
+              headers: {
+                authorization: "Token " + this.$store.state.authToken
+              }
+            })
+            .then(response => {
+              this.body = response.data.article.body;
+              this.description = response.data.article.description;
+              this.tagList = response.data.article.tagList;
+              this.title = response.data.article.title;
+
+              this.isLoading = false;
+            });
+        } else {
+          this.isLoading = false;
+        }
       }
     });
   },
@@ -122,21 +143,24 @@ export default {
     },
     submit() {
       this.isSubmitting = true;
-      axios
-        .post(
-          "articles",
-          {
-            body: this.body,
-            description: this.description,
-            tagList: this.tagList,
-            title: this.title
-          },
-          {
-            headers: {
-              authorization: "Token " + this.$store.state.authToken
-            }
+      let request = axios.post;
+      if (this.$route.params.slug) {
+        request = axios.put;
+      }
+      request(
+        "articles",
+        {
+          body: this.body,
+          description: this.description,
+          tagList: this.tagList,
+          title: this.title
+        },
+        {
+          headers: {
+            authorization: "Token " + this.$store.state.authToken
           }
-        )
+        }
+      )
         .then(response => {
           this.$router.push({
             name: "article",

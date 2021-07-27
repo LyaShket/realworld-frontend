@@ -26,6 +26,11 @@ const routes = [
     component: AppLogin
   },
   {
+    path: "/editor/:slug",
+    name: "editor_slug",
+    component: AppEditor
+  },
+  {
     path: "/editor",
     name: "editor",
     component: AppEditor
