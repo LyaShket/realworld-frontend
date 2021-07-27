@@ -73,7 +73,7 @@
       No articles are here... yet.
     </div>
 
-    <nav class="ng-isolate-scope">
+    <nav class="ng-isolate-scope" v-if="articles">
       <ul class="pagination">
         <li
           class="page-item ng-scope"
