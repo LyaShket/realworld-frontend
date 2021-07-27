@@ -170,6 +170,9 @@ export default {
         this.slug = response.data.article.slug;
 
         this.isLoading = false;
+      })
+      .catch(() => {
+        this.$router.push({ name: "home" });
       });
   }
 };

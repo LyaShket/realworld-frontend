@@ -33,8 +33,8 @@
 
       <button
         class="btn btn-outline-danger btn-sm"
-        ng-class="{disabled: $ctrl.isDeleting}"
-        ng-click="$ctrl.deleteArticle()"
+        :disabled="isDeleting"
+        @click="deleteArticle"
       >
         <i class="ion-trash-a"></i> Delete Article
       </button>
@@ -73,13 +73,10 @@
 </template>
 
 <script>
+import axios from "@/api/axios";
+
 export default {
   name: "AppArticleMeta",
-  computed: {
-    currentUser() {
-      return this.$store.state.currentUser;
-    }
-  },
   props: {
     author: {
       type: Object,
@@ -102,6 +99,33 @@ export default {
     slug: {
       type: String,
       required: true
+    }
+  },
+  computed: {
+    currentUser() {
+      return this.$store.state.currentUser;
+    }
+  },
+  data() {
+    return {
+      isDeleting: false
+    };
+  },
+  methods: {
+    deleteArticle() {
+      this.isDeleting = true;
+      axios
+        .delete(`articles/${this.$route.params.slug}`, {
+          headers: {
+            authorization: "Token " + this.$store.state.authToken
+          }
+        })
+        .then(() => {
+          this.$router.push({ name: "home" });
+        })
+        .catch(() => {
+          this.isDeleting = false;
+        });
     }
   }
 };
