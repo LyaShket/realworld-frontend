@@ -91,25 +91,11 @@ import axios from "@/api/axios";
 
 export default {
   name: "AppArticleList",
-  data() {
-    return {
-      articles: null
-    };
-  },
-  created() {
-    let requestParams = {};
-    if (this.$store.state.authToken !== "") {
-      requestParams = {
-        headers: {
-          authorization: "Token " + this.$store.state.authToken
-        }
-      };
+  props: {
+    articles: {
+      // Array || null
+      required: true
     }
-    axios.get("articles?limit=10", requestParams).then(response => {
-      const articles = response.data.articles;
-      articles.map(article => (article.isWaitingToggle = false));
-      this.articles = articles;
-    });
   },
   methods: {
     toggleFavorite(toggleArticle) {

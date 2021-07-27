@@ -1,0 +1,5 @@
+export const ARTICLE_LIST_TYPES = {
+  YOUR_FEED: "YOUR_FEED",
+  GLOBAL_FEED: "GLOBAL_FEED",
+  TAG: "TAG"
+};
