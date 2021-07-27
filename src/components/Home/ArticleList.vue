@@ -75,11 +75,19 @@
 
     <nav class="ng-isolate-scope">
       <ul class="pagination">
-        <li class="page-item ng-scope active">
-          <a class="page-link ng-binding" href="">1</a>
-        </li>
-        <li class="page-item ng-scope">
-          <a class="page-link ng-binding" href="">2</a>
+        <li
+          class="page-item ng-scope"
+          v-for="pageNumber in pagesCountList"
+          :key="pageNumber"
+          :class="{ active: currentPageNumber === pageNumber }"
+        >
+          <a
+            class="page-link ng-binding"
+            href=""
+            @click.prevent="switchPage(pageNumber)"
+          >
+            {{ pageNumber }}
+          </a>
         </li>
       </ul>
     </nav>
@@ -95,6 +103,25 @@ export default {
     articles: {
       // Array || null
       required: true
+    },
+    pagesCount: {
+      type: Number,
+      required: false,
+      default: 0
+    },
+    currentPageNumber: {
+      type: Number,
+      required: false,
+      default: 0
+    }
+  },
+  computed: {
+    pagesCountList() {
+      let list = [];
+      for (let i = 1; i <= this.pagesCount; i++) {
+        list.push(i);
+      }
+      return list;
     }
   },
   methods: {
@@ -137,6 +164,9 @@ export default {
             });
           });
       }
+    },
+    switchPage(pageNumber) {
+      this.$emit("switch-page", pageNumber);
     }
   }
 };

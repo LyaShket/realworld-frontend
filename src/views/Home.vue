@@ -17,7 +17,12 @@
             :tag="tag"
             @set-article-list-type="setArticleListType"
           />
-          <app-article-list :articles="articles" />
+          <app-article-list
+            :articles="articles"
+            :pagesCount="pagesCount"
+            :currentPageNumber="currentPageNumber"
+            @switch-page="switchPage"
+          />
         </div>
         <app-popular-tags @set-tag="setTag" />
       </div>
@@ -38,15 +43,34 @@ export default {
   computed: {
     currentUser() {
       return this.$store.state.currentUser;
+    },
+    offset() {
+      return this.limit * (this.currentPageNumber - 1);
+    },
+    pagesCount() {
+      let pagesCountFloat = this.articlesCount / this.limit;
+      let parsedPagesCountFloat = Number.parseFloat(pagesCountFloat);
+
+      let pagesCount = parsedPagesCountFloat.toFixed(0);
+      if (pagesCount > pagesCountFloat) {
+        pagesCount += 1;
+      }
+      if (pagesCount > 50) {
+        pagesCount = 50;
+      }
+
+      return Number.parseInt(pagesCount);
     }
   },
   data() {
     return {
       tag: null,
       limit: 10,
-      offset: 0,
       articleListType: ARTICLE_LIST_TYPES.GLOBAL_FEED,
-      articles: null
+      articles: null,
+
+      articlesCount: 0,
+      currentPageNumber: 1
     };
   },
   created() {
@@ -82,7 +106,11 @@ export default {
         const articles = response.data.articles;
         articles.map(article => (article.isWaitingToggle = false));
         this.articles = articles;
+        this.articlesCount = response.data.articlesCount;
       });
+    },
+    switchPage(pageNumber) {
+      this.currentPageNumber = pageNumber;
     }
   },
   watch: {
@@ -91,6 +119,14 @@ export default {
       if (newValue !== ARTICLE_LIST_TYPES.TAG) {
         this.tag = null;
       }
+      this.getArticles();
+    },
+    tag() {
+      this.articles = null;
+      this.getArticles();
+    },
+    currentPageNumber() {
+      this.articles = null;
       this.getArticles();
     }
   }
