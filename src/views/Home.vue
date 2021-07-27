@@ -18,7 +18,7 @@
           />
           <app-article-list :articles="articles" />
         </div>
-        <app-popular-tags />
+        <app-popular-tags @set-tag="setTag" />
       </div>
     </div>
   </div>
@@ -55,8 +55,10 @@ export default {
   methods: {
     setArticleListType(type) {
       this.articleListType = type;
-      this.articles = null;
-      this.getArticles();
+    },
+    setTag(tag) {
+      this.articleListType = ARTICLE_LIST_TYPES.TAG;
+      this.tag = tag;
     },
     getArticles() {
       let requestParams = {};
@@ -81,6 +83,15 @@ export default {
         articles.map(article => (article.isWaitingToggle = false));
         this.articles = articles;
       });
+    }
+  },
+  watch: {
+    articleListType(newValue) {
+      this.articles = null;
+      if (newValue !== ARTICLE_LIST_TYPES.TAG) {
+        this.tag = null;
+      }
+      this.getArticles();
     }
   }
 };
