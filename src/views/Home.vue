@@ -33,7 +33,11 @@
 import AppTabs from "@/components/Home/Tabs";
 import AppArticleList from "@/components/Home/ArticleList";
 import AppPopularTags from "@/components/Home/PopularTags";
-import axios from "@/api/axios";
+import {
+  getArticlesGlobalFeed,
+  getArticlesYourFeed,
+  getArticlesTag
+} from "@/api/api";
 import { ARTICLE_LIST_TYPES } from "@/constants";
 
 export default {
@@ -84,28 +88,23 @@ export default {
       this.tag = tag;
     },
     getArticles() {
-      let requestParams = {};
-      if (this.$store.state.authToken !== "") {
-        requestParams = {
-          headers: {
-            authorization: "Token " + this.$store.state.authToken
-          }
-        };
-      }
-      let link = `articles?limit=${this.limit}&offset=${this.offset}`;
+      let promise;
       switch (this.articleListType) {
+        case ARTICLE_LIST_TYPES.GLOBAL_FEED:
+          promise = getArticlesGlobalFeed(this.limit, this.offset);
+          break;
         case ARTICLE_LIST_TYPES.YOUR_FEED:
-          link = `articles/feed?limit=${this.limit}&offset=${this.offset}`;
+          promise = getArticlesYourFeed(this.limit, this.offset);
           break;
         case ARTICLE_LIST_TYPES.TAG:
-          link = `articles?limit=${this.limit}&offset=${this.offset}&tag=${this.tag}`;
+          promise = getArticlesTag(this.limit, this.offset, this.tag);
           break;
       }
-      axios.get(link, requestParams).then(response => {
-        const articles = response.data.articles;
+      promise.then(data => {
+        const articles = data.articles;
         articles.map(article => (article.isWaitingToggle = false));
         this.articles = articles;
-        this.articlesCount = response.data.articlesCount;
+        this.articlesCount = data.articlesCount;
       });
     },
     switchPage(pageNumber) {

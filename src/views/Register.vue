@@ -68,8 +68,8 @@
 </template>
 
 <script>
-import axios from "@/api/axios";
 import AppValidateErrors from "@/components/ValidateErrors";
+import { registerUser } from "@/api/api";
 
 export default {
   name: "AppRegister",
@@ -88,20 +88,13 @@ export default {
   methods: {
     submit() {
       this.isSubmitting = true;
-      axios
-        .post("users", {
-          user: {
-            username: this.username,
-            email: this.email,
-            password: this.password
-          }
-        })
-        .then(response => {
-          this.$store.dispatch("authorize", response.data.user);
+      registerUser(this.username, this.email, this.password)
+        .then(user => {
+          this.$store.dispatch("authorize", user);
           this.$router.push({ name: "home" });
         })
-        .catch(error => {
-          this.validateErrors = error.response.data.errors;
+        .catch(errors => {
+          this.validateErrors = errors;
           this.isSubmitting = false;
         });
     }

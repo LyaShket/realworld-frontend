@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import axios from "@/api/axios";
+import { favoriteArticle, unfavoriteArticle } from "@/api/api";
 
 export default {
   name: "AppArticleList",
@@ -132,47 +132,21 @@ export default {
   methods: {
     toggleFavorite(toggleArticle) {
       toggleArticle.isWaitingToggle = true;
-      if (this.currentUser === null) {
-        this.$router.push({ name: "login" });
-        return;
-      }
+      let promise;
       if (toggleArticle.favorited) {
-        axios
-          .delete(`articles/${toggleArticle.slug}/favorite`, {
-            headers: {
-              authorization: "Token " + this.$store.state.authToken
-            }
-          })
-          .then(response => {
-            this.articles.map(article => {
-              if (article === toggleArticle) {
-                article.favorited = false;
-                article.favoritesCount = response.data.article.favoritesCount;
-                article.isWaitingToggle = false;
-              }
-            });
-          });
+        promise = unfavoriteArticle(toggleArticle.slug);
       } else {
-        axios
-          .post(
-            `articles/${toggleArticle.slug}/favorite`,
-            {},
-            {
-              headers: {
-                authorization: "Token " + this.$store.state.authToken
-              }
-            }
-          )
-          .then(response => {
-            this.articles.map(article => {
-              if (article === toggleArticle) {
-                article.favorited = true;
-                article.favoritesCount = response.data.article.favoritesCount;
-                article.isWaitingToggle = false;
-              }
-            });
-          });
+        promise = favoriteArticle(toggleArticle.slug);
       }
+      promise.then(resArticle => {
+        this.articles.map(article => {
+          if (article === toggleArticle) {
+            article.favorited = true;
+            article.favoritesCount = resArticle.favoritesCount;
+            article.isWaitingToggle = false;
+          }
+        });
+      });
     },
     switchPage(pageNumber) {
       this.$emit("switch-page", pageNumber);

@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import axios from "@/api/axios";
+import { getCurrentUser } from "@/api/api";
 
 Vue.use(Vuex);
 
@@ -26,14 +26,9 @@ export default new Vuex.Store({
     },
     getCurrentUser(context) {
       return new Promise(resolve => {
-        axios
-          .get("user", {
-            headers: {
-              authorization: "Token " + context.state.authToken
-            }
-          })
-          .then(response => {
-            context.commit("setCurrentUser", response.data.user);
+        getCurrentUser()
+          .then(user => {
+            context.commit("setCurrentUser", user);
             resolve();
           })
           .catch(() => {

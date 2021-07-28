@@ -72,7 +72,13 @@
 <script>
 import AppArticleList from "@/components/Home/ArticleList";
 import AppTabs from "@/components/User/Tabs";
-import axios from "@/api/axios";
+import {
+  getArticlesMy,
+  getArticlesFavorited,
+  getProfile,
+  followUser,
+  unfollowUser
+} from "@/api/api";
 import { ARTICLE_LIST_TYPES } from "@/constants";
 
 export default {
@@ -120,45 +126,37 @@ export default {
   },
   created() {
     this.getArticles();
-    this.getUser();
+    this.getProfile();
   },
   methods: {
     setArticleListType(type) {
       this.articleListType = type;
     },
     getArticles() {
-      let requestParams = {};
-      if (this.$store.state.authToken !== "") {
-        requestParams = {
-          headers: {
-            authorization: "Token " + this.$store.state.authToken
-          }
-        };
+      let promise;
+      switch (this.articleListType) {
+        case ARTICLE_LIST_TYPES.MY_ARTICLES:
+          promise = getArticlesMy(this.username, this.limit, this.offset);
+          break;
+        case ARTICLE_LIST_TYPES.FAVORITED_ARTICLES:
+          promise = getArticlesFavorited(
+            this.username,
+            this.limit,
+            this.offset
+          );
+          break;
       }
-      let link = `articles?author=${this.username}&limit=${this.limit}&offset=${this.offset}`;
-      if (this.articleListType === ARTICLE_LIST_TYPES.FAVORITED_ARTICLES) {
-        link = `articles?favorited=${this.username}&limit=${this.limit}&offset=${this.offset}`;
-      }
-      axios.get(link, requestParams).then(response => {
-        const articles = response.data.articles;
+      promise.then(data => {
+        const articles = data.articles;
         articles.map(article => (article.isWaitingToggle = false));
         this.articles = articles;
-        this.articlesCount = response.data.articlesCount;
+        this.articlesCount = data.articlesCount;
       });
     },
-    getUser() {
-      let requestParams = {};
-      if (this.$store.state.authToken !== "") {
-        requestParams = {
-          headers: {
-            authorization: "Token " + this.$store.state.authToken
-          }
-        };
-      }
-      axios
-        .get(`profiles/${this.username}`, requestParams)
-        .then(response => {
-          this.profile = response.data.profile;
+    getProfile() {
+      getProfile(this.username)
+        .then(profile => {
+          this.profile = profile;
           this.isProfileLoading = false;
         })
         .catch(() => {
@@ -170,18 +168,9 @@ export default {
     },
     follow() {
       this.isFollowSubmitting = true;
-      axios
-        .post(
-          `profiles/${this.username}/follow`,
-          {},
-          {
-            headers: {
-              authorization: "Token " + this.$store.state.authToken
-            }
-          }
-        )
-        .then(response => {
-          this.profile = response.data.profile;
+      followUser(this.username)
+        .then(profile => {
+          this.profile = profile;
           this.isFollowSubmitting = false;
         })
         .catch(error => {
@@ -193,14 +182,9 @@ export default {
     },
     unfollow() {
       this.isFollowSubmitting = true;
-      axios
-        .delete(`profiles/${this.username}/follow`, {
-          headers: {
-            authorization: "Token " + this.$store.state.authToken
-          }
-        })
-        .then(response => {
-          this.profile = response.data.profile;
+      unfollowUser(this.username)
+        .then(profile => {
+          this.profile = profile;
           this.isFollowSubmitting = false;
         })
         .catch(() => {
@@ -220,7 +204,7 @@ export default {
     username() {
       this.articles = null;
       this.getArticles();
-      this.getUser();
+      this.getProfile();
     }
   }
 };

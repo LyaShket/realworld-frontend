@@ -45,7 +45,7 @@
       <button
         v-if="author.following"
         class="btn btn-sm action-btn ng-binding btn-secondary"
-        @click="unfollow"
+        @click="onUnfollow"
         :disabled="isFollowSubmitting"
       >
         <i class="ion-plus-round"></i>
@@ -55,7 +55,7 @@
       <button
         v-else
         class="btn btn-sm action-btn ng-binding btn-outline-secondary"
-        @click="follow"
+        @click="onFollow"
         :disabled="isFollowSubmitting"
       >
         <i class="ion-plus-round"></i>
@@ -115,6 +115,14 @@ export default {
     slug: {
       type: String,
       required: true
+    },
+    follow: {
+      type: Function,
+      required: true
+    },
+    unfollow: {
+      type: Function,
+      required: true
     }
   },
   computed: {
@@ -145,45 +153,17 @@ export default {
           this.isDeleting = false;
         });
     },
-    follow() {
-      if (this.currentUser === null) {
-        this.$router.push({ name: "login" });
-        return;
-      }
+    onFollow() {
       this.isFollowSubmitting = true;
-      axios
-        .post(
-          `profiles/${this.author.username}/follow`,
-          {},
-          {
-            headers: {
-              authorization: "Token " + this.$store.state.authToken
-            }
-          }
-        )
-        .then(() => {
-          this.$emit("follow");
-          this.isFollowSubmitting = false;
-        })
-        .catch(() => {
-          this.isFollowSubmitting = false;
-        });
+      this.follow(this.author.username).then(() => {
+        this.isFollowSubmitting = false;
+      });
     },
-    unfollow() {
+    onUnfollow() {
       this.isFollowSubmitting = true;
-      axios
-        .delete(`profiles/${this.author.username}/follow`, {
-          headers: {
-            authorization: "Token " + this.$store.state.authToken
-          }
-        })
-        .then(() => {
-          this.$emit("unfollow");
-          this.isFollowSubmitting = false;
-        })
-        .catch(() => {
-          this.isFollowSubmitting = false;
-        });
+      this.unfollow(this.author.username).then(() => {
+        this.isFollowSubmitting = false;
+      });
     },
     toggleFavorite() {
       if (this.currentUser === null) {

@@ -15,8 +15,8 @@
           :slug="slug"
           @favorite="favorite"
           @unfavorite="unfavorite"
-          @follow="follow"
-          @unfollow="unfollow"
+          :follow="follow"
+          :unfollow="unfollow"
         />
       </div>
     </div>
@@ -52,8 +52,8 @@
           :slug="slug"
           @favorite="favorite"
           @unfavorite="unfavorite"
-          @follow="follow"
-          @unfollow="unfollow"
+          :follow="follow"
+          :unfollow="unfollow"
         />
       </div>
 
@@ -132,7 +132,14 @@
 <script>
 import AppArticleMeta from "@/components/Article/ArticleMeta";
 import AppValidateErrors from "@/components/ValidateErrors";
-import axios from "@/api/axios";
+import {
+  getArticle,
+  getComments,
+  postComment,
+  deleteComment,
+  followUser,
+  unfollowUser
+} from "@/api/api";
 
 export default {
   name: "AppArticle",
@@ -164,46 +171,27 @@ export default {
     }
   },
   created() {
-    let requestParams = {};
-    if (this.$store.state.authToken !== "") {
-      requestParams = {
-        headers: {
-          authorization: "Token " + this.$store.state.authToken
-        }
-      };
-    }
-    axios
-      .get(`articles/${this.$route.params.slug}`, requestParams)
-      .then(response => {
-        this.author = response.data.article.author;
-        this.body = response.data.article.body;
-        this.createdAt = response.data.article.createdAt;
-        this.description = response.data.article.description;
-        this.favorited = response.data.article.favorited;
-        this.favoritesCount = response.data.article.favoritesCount;
-        this.tagList = response.data.article.tagList;
-        this.title = response.data.article.title;
-        this.slug = response.data.article.slug;
+    getArticle(this.$route.params.slug)
+      .then(article => {
+        this.author = article.author;
+        this.body = article.body;
+        this.createdAt = article.createdAt;
+        this.description = article.description;
+        this.favorited = article.favorited;
+        this.favoritesCount = article.favoritesCount;
+        this.tagList = article.tagList;
+        this.title = article.title;
+        this.slug = article.slug;
 
         this.isLoading = false;
       })
       .catch(() => {
         this.$router.push({ name: "home" });
       });
-    axios
-      .get(
-        `articles/${this.$route.params.slug}/comments`,
-        {},
-        {
-          headers: {
-            authorization: "Token " + this.$store.state.authToken
-          }
-        }
-      )
-      .then(response => {
-        this.comments = response.data.comments;
-        this.isCommentsLoading = false;
-      });
+    getComments(this.$route.params.slug).then(comments => {
+      this.comments = comments;
+      this.isCommentsLoading = false;
+    });
   },
   methods: {
     favorite(favoritesCount) {
@@ -215,41 +203,40 @@ export default {
       this.favoritesCount = favoritesCount;
     },
     follow() {
-      this.author.following = true;
+      return new Promise((resolve, reject) => {
+        followUser(this.author.username)
+          .then(profile => {
+            this.author = profile;
+            resolve();
+          })
+          .catch(reject);
+      });
     },
     unfollow() {
-      this.author.following = false;
+      return new Promise((resolve, reject) => {
+        unfollowUser(this.author.username)
+          .then(profile => {
+            this.author = profile;
+            resolve();
+          })
+          .catch(reject);
+      });
     },
     postComment() {
       this.validateErrors = null;
-      axios
-        .post(
-          `articles/${this.slug}/comments`,
-          { comment: { body: this.commentText } },
-          {
-            headers: {
-              authorization: "Token " + this.$store.state.authToken
-            }
-          }
-        )
-        .then(response => {
-          this.comments.unshift(response.data.comment);
+      postComment(this.slug, this.commentText)
+        .then(comment => {
+          this.comments.unshift(comment);
           this.commentText = "";
         })
-        .catch(error => {
-          this.validateErrors = error.response.data.errors;
+        .catch(errors => {
+          this.validateErrors = errors;
         });
     },
     deleteComment(id) {
-      axios
-        .delete(`articles/${this.slug}/comments/${id}`, {
-          headers: {
-            authorization: "Token " + this.$store.state.authToken
-          }
-        })
-        .then(() => {
-          this.comments = this.comments.filter(comment => comment.id !== id);
-        });
+      deleteComment(this.slug, id).then(() => {
+        this.comments = this.comments.filter(comment => comment.id !== id);
+      });
     },
     prettiefyDate(isoDateString) {
       const date = new Date(Date.parse(isoDateString));

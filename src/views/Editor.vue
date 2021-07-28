@@ -85,7 +85,7 @@
 
 <script>
 import ValidateErrors from "../components/ValidateErrors.vue";
-import axios from "@/api/axios";
+import { getArticle, postArticle, updateArticle } from "@/api/api";
 
 export default {
   name: "AppEditor",
@@ -111,20 +111,14 @@ export default {
         this.$router.push({ name: "home" });
       } else {
         if (this.$route.params.slug) {
-          axios
-            .get(`articles/${this.$route.params.slug}`, {
-              headers: {
-                authorization: "Token " + this.$store.state.authToken
-              }
-            })
-            .then(response => {
-              this.body = response.data.article.body;
-              this.description = response.data.article.description;
-              this.tagList = response.data.article.tagList;
-              this.title = response.data.article.title;
+          getArticle(this.$route.params.slug).then(article => {
+            this.body = article.body;
+            this.description = article.description;
+            this.tagList = article.tagList;
+            this.title = article.title;
 
-              this.isLoading = false;
-            });
+            this.isLoading = false;
+          });
         } else {
           this.isLoading = false;
         }
@@ -143,34 +137,32 @@ export default {
     },
     submit() {
       this.isSubmitting = true;
-      let request = axios.post;
-      let link = "articles";
+      let promise;
       if (this.$route.params.slug) {
-        request = axios.put;
-        link = `articles/${this.$route.params.slug}`;
+        promise = updateArticle(
+          this.$route.params.slug,
+          this.body,
+          this.description,
+          this.tagList,
+          this.title
+        );
+      } else {
+        promise = postArticle(
+          this.body,
+          this.description,
+          this.tagList,
+          this.title
+        );
       }
-      request(
-        link,
-        {
-          body: this.body,
-          description: this.description,
-          tagList: this.tagList,
-          title: this.title
-        },
-        {
-          headers: {
-            authorization: "Token " + this.$store.state.authToken
-          }
-        }
-      )
-        .then(response => {
+      promise
+        .then(article => {
           this.$router.push({
             name: "article",
-            params: { slug: response.data.article.slug }
+            params: { slug: article.slug }
           });
         })
-        .catch(error => {
-          this.validateErrors = error.response.data.errors;
+        .catch(errors => {
+          this.validateErrors = errors;
           this.isSubmitting = false;
         });
     }

@@ -91,8 +91,8 @@
 </template>
 
 <script>
-import axios from "@/api/axios";
 import ValidateErrors from "@/components/ValidateErrors.vue";
+import { updateUserSettings } from "@/api/api";
 
 export default {
   name: "AppSettings",
@@ -131,23 +131,14 @@ export default {
   },
   methods: {
     submit() {
-      const userData = {
-        bio: this.bio,
-        email: this.email,
-        image: this.image,
-        username: this.username
-      };
-      if (this.password !== "") {
-        userData.password = this.password;
-      }
-
       this.isSubmitting = true;
-      axios
-        .put("user", userData, {
-          headers: {
-            authorization: "Token " + this.$store.state.authToken
-          }
-        })
+      updateUserSettings(
+        this.bio,
+        this.email,
+        this.image,
+        this.username,
+        this.password
+      )
         .then(() => {
           this.$store.dispatch("getCurrentUser").then(() => {
             this.$router.push({
@@ -156,8 +147,8 @@ export default {
             });
           });
         })
-        .catch(error => {
-          this.validateErrors = error.response.data.errors;
+        .catch(errors => {
+          this.validateErrors = errors;
           this.isSubmitting = false;
         });
     },

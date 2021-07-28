@@ -58,8 +58,8 @@
 </template>
 
 <script>
-import axios from "@/api/axios";
 import AppValidateErrors from "@/components/ValidateErrors";
+import { loginUser } from "@/api/api";
 
 export default {
   name: "AppLogin",
@@ -77,19 +77,13 @@ export default {
   methods: {
     submit() {
       this.isSubmitting = true;
-      axios
-        .post("users/login", {
-          user: {
-            email: this.email,
-            password: this.password
-          }
-        })
-        .then(response => {
-          this.$store.dispatch("authorize", response.data.user);
+      loginUser(this.email, this.password)
+        .then(user => {
+          this.$store.dispatch("authorize", user);
           this.$router.push({ name: "home" });
         })
-        .catch(error => {
-          this.validateErrors = error.response.data.errors;
+        .catch(errors => {
+          this.validateErrors = errors;
           this.isSubmitting = false;
         });
     }

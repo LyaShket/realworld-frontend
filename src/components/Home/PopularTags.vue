@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import axios from "@/api/axios";
+import { getTags } from "@/api/api";
 
 export default {
   name: "AppPopularTags",
@@ -35,8 +35,8 @@ export default {
     };
   },
   created() {
-    axios.get("tags").then(response => {
-      this.tags = response.data.tags;
+    getTags().then(tags => {
+      this.tags = tags;
     });
   },
   methods: {
