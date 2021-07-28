@@ -116,6 +116,9 @@ export default {
     }
   },
   computed: {
+    currentUser() {
+      return this.$store.state.currentUser;
+    },
     pagesCountList() {
       let list = [];
       for (let i = 1; i <= this.pagesCount; i++) {
@@ -127,6 +130,10 @@ export default {
   methods: {
     toggleFavorite(toggleArticle) {
       toggleArticle.isWaitingToggle = true;
+      if (this.currentUser === null) {
+        this.$router.push({ name: "login" });
+        return;
+      }
       if (toggleArticle.favorited) {
         axios
           .delete(`articles/${toggleArticle.slug}/favorite`, {

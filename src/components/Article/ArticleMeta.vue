@@ -146,6 +146,10 @@ export default {
         });
     },
     follow() {
+      if (this.currentUser === null) {
+        this.$router.push({ name: "login" });
+        return;
+      }
       this.isFollowSubmitting = true;
       axios
         .post(
@@ -182,6 +186,10 @@ export default {
         });
     },
     toggleFavorite() {
+      if (this.currentUser === null) {
+        this.$router.push({ name: "login" });
+        return;
+      }
       this.isFavoriteSubmitting = true;
       if (this.favorited) {
         axios

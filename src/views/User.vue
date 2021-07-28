@@ -12,7 +12,7 @@
             <router-link
               class="btn btn-sm btn-outline-secondary action-btn ng-hide"
               :to="{ name: 'settings' }"
-              v-if="username === currentUser.username"
+              v-if="currentUser && username === currentUser.username"
             >
               <i class="ion-gear-a"></i> Edit Profile Settings
             </router-link>
@@ -147,16 +147,18 @@ export default {
       });
     },
     getUser() {
-      axios
-        .get(`profiles/${this.username}`, {
+      let requestParams = {};
+      if (this.$store.state.authToken !== "") {
+        requestParams = {
           headers: {
             authorization: "Token " + this.$store.state.authToken
           }
-        })
-        .then(response => {
-          this.profile = response.data.profile;
-          this.isProfileLoading = false;
-        });
+        };
+      }
+      axios.get(`profiles/${this.username}`, requestParams).then(response => {
+        this.profile = response.data.profile;
+        this.isProfileLoading = false;
+      });
     },
     switchPage(pageNumber) {
       this.currentPageNumber = pageNumber;
@@ -177,8 +179,11 @@ export default {
           this.profile = response.data.profile;
           this.isFollowSubmitting = false;
         })
-        .catch(() => {
+        .catch(error => {
           this.isFollowSubmitting = false;
+          if (error.response.status === 401) {
+            this.$router.push({ name: "login" });
+          }
         });
     },
     unfollow() {

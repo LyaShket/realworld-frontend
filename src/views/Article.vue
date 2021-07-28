@@ -113,7 +113,10 @@
                 <i
                   class="ion-trash-a"
                   @click="deleteComment(comment.id)"
-                  v-if="comment.author.username === currentUser.username"
+                  v-if="
+                    currentUser &&
+                      comment.author.username === currentUser.username
+                  "
                 ></i>
               </span>
             </div>
