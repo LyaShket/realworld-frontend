@@ -58,24 +58,28 @@
       </div>
 
       <!-- Comments section -->
-      <div class="row">
+      <div class="row" v-if="!isCommentsLoading">
         <div class="col-xs-12 col-md-8 offset-md-2">
           <div v-if="currentUser">
-            <app-validate-errors />
-            <form class="card comment-form ng-valid ng-dirty ng-submitted">
+            <app-validate-errors
+              v-if="validateErrors"
+              :validateErrors="validateErrors"
+            />
+            <form
+              class="card comment-form ng-valid ng-dirty ng-submitted"
+              @submit.prevent="postComment"
+            >
               <div class="card-block">
                 <textarea
                   class="form-control ng-valid ng-dirty ng-touched ng-empty"
                   placeholder="Write a comment..."
                   rows="3"
+                  v-model="commentText"
                 >
                 </textarea>
               </div>
               <div class="card-footer">
-                <img
-                  class="comment-author-img"
-                  src="https://yt4.ggpht.com/Q1dFlZx-ZAABgKgh3MiMmMbJITNZhVvPPaPQF4R1hfw2FIB70r3qxb4g2TbVRnraIopXoK7i=s32-c-k-c0x00ffffff-no-rj"
-                />
+                <img class="comment-author-img" :src="currentUser.image" />
                 <button class="btn btn-sm btn-primary" type="submit">
                   Post Comment
                 </button>
@@ -88,34 +92,29 @@
             comments on this article.
           </p>
 
-          <div class="card">
+          <div class="card" v-for="comment in comments" :key="comment.id">
             <div class="card-block">
               <p class="card-text ng-binding" ng-bind="::$ctrl.data.body">
-                TEXT OF COMMENT
+                {{ comment.body }}
               </p>
             </div>
             <div class="card-footer">
               <a class="comment-author" href="#/@scammed">
-                <img
-                  class="comment-author-img"
-                  src="https://yt4.ggpht.com/Q1dFlZx-ZAABgKgh3MiMmMbJITNZhVvPPaPQF4R1hfw2FIB70r3qxb4g2TbVRnraIopXoK7i=s32-c-k-c0x00ffffff-no-rj"
-                />
+                <img class="comment-author-img" :src="comment.author.image" />
               </a>
               &nbsp;
-              <a
-                class="comment-author ng-binding"
-                ui-sref="app.profile.main({ username: $ctrl.data.author.username })"
-                ng-bind="::$ctrl.data.author.username"
-                href="#/@scammed"
-                >scammed</a
-              >
-              <span
-                class="date-posted ng-binding"
-                ng-bind="::$ctrl.data.createdAt | date: 'longDate' "
-                >July 27, 2021</span
-              >
+              <a class="comment-author ng-binding" href="#/@scammed">{{
+                comment.author.username
+              }}</a>
+              <span class="date-posted ng-binding">{{
+                comment.createdAt
+              }}</span>
               <span class="mod-options">
-                <i class="ion-trash-a"></i>
+                <i
+                  class="ion-trash-a"
+                  @click="deleteComment(comment.id)"
+                  v-if="comment.author.username === currentUser.username"
+                ></i>
               </span>
             </div>
           </div>
@@ -147,7 +146,13 @@ export default {
       favoritesCount: 0,
       tagList: [],
       title: "",
-      slug: ""
+      slug: "",
+
+      commentText: "",
+      comments: [],
+      isCommentsLoading: true,
+
+      validateErrors: null
     };
   },
   computed: {
@@ -182,6 +187,20 @@ export default {
       .catch(() => {
         this.$router.push({ name: "home" });
       });
+    axios
+      .get(
+        `articles/${this.$route.params.slug}/comments`,
+        {},
+        {
+          headers: {
+            authorization: "Token " + this.$store.state.authToken
+          }
+        }
+      )
+      .then(response => {
+        this.comments = response.data.comments;
+        this.isCommentsLoading = false;
+      });
   },
   methods: {
     favorite(favoritesCount) {
@@ -197,6 +216,37 @@ export default {
     },
     unfollow() {
       this.author.following = false;
+    },
+    postComment() {
+      this.validateErrors = null;
+      axios
+        .post(
+          `articles/${this.slug}/comments`,
+          { comment: { body: this.commentText } },
+          {
+            headers: {
+              authorization: "Token " + this.$store.state.authToken
+            }
+          }
+        )
+        .then(response => {
+          this.comments.unshift(response.data.comment);
+          this.commentText = "";
+        })
+        .catch(error => {
+          this.validateErrors = error.response.data.errors;
+        });
+    },
+    deleteComment(id) {
+      axios
+        .delete(`articles/${this.slug}/comments/${id}`, {
+          headers: {
+            authorization: "Token " + this.$store.state.authToken
+          }
+        })
+        .then(() => {
+          this.comments = this.comments.filter(comment => comment.id !== id);
+        });
     }
   }
 };
