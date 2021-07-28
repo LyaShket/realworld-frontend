@@ -41,33 +41,49 @@
     </span>
     <!-- Otherwise, show favorite & follow buttons -->
     <span v-else>
-      <follow-btn user="$ctrl.article.author" class="ng-isolate-scope"
-        ><button
-          class="btn btn-sm action-btn ng-binding btn-outline-secondary"
-          ng-class="{ 'disabled': $ctrl.isSubmitting,
-              'btn-outline-secondary': !$ctrl.user.following,
-              'btn-secondary': $ctrl.user.following }"
-          ng-click="$ctrl.submit()"
-        >
-          <i class="ion-plus-round"></i>
-          &nbsp; Follow cy454370015
-        </button>
-      </follow-btn>
-      <favorite-btn article="$ctrl.article" class="ng-isolate-scope"
-        ><button
-          class="btn btn-sm btn-outline-primary"
-          ng-class="{ 'disabled': $ctrl.isSubmitting,
-              'btn-outline-primary': !$ctrl.article.favorited,
-              'btn-primary': $ctrl.article.favorited }"
-          ng-click="$ctrl.submit()"
-        >
-          <i class="ion-heart"></i>
-          <ng-transclude
-            ><span class="ng-binding ng-scope"> Favorite Article </span
-            ><span class="counter ng-binding ng-scope">(0)</span>
-          </ng-transclude>
-        </button>
-      </favorite-btn>
+      <!-- Unfollow button -->
+      <button
+        v-if="author.following"
+        class="btn btn-sm action-btn ng-binding btn-secondary"
+        @click="unfollow"
+        :disabled="isFollowSubmitting"
+      >
+        <i class="ion-plus-round"></i>
+        &nbsp; Unfollow {{ author.username }}
+      </button>
+      <!-- Follow button -->
+      <button
+        v-else
+        class="btn btn-sm action-btn ng-binding btn-outline-secondary"
+        @click="follow"
+        :disabled="isFollowSubmitting"
+      >
+        <i class="ion-plus-round"></i>
+        &nbsp; Follow {{ author.username }}
+      </button>
+
+      <!-- Unfavorite button -->
+      <button
+        v-if="favorited"
+        class="btn btn-sm btn-primary"
+        @click="toggleFavorite"
+        :disabled="isFavoriteSubmitting"
+      >
+        <i class="ion-heart"></i>
+        <span class="ng-binding ng-scope"> Unfavorite Article </span>
+        <span class="counter ng-binding ng-scope">({{ favoritesCount }})</span>
+      </button>
+      <!-- Favorite button -->
+      <button
+        v-else
+        class="btn btn-sm btn-outline-primary"
+        @click="toggleFavorite"
+        :disabled="isFavoriteSubmitting"
+      >
+        <i class="ion-heart"></i>
+        <span class="ng-binding ng-scope"> Favorite Article </span>
+        <span class="counter ng-binding ng-scope">({{ favoritesCount }})</span>
+      </button>
     </span>
   </div>
 </template>
@@ -108,7 +124,9 @@ export default {
   },
   data() {
     return {
-      isDeleting: false
+      isDeleting: false,
+      isFollowSubmitting: false,
+      isFavoriteSubmitting: false
     };
   },
   methods: {
@@ -126,6 +144,78 @@ export default {
         .catch(() => {
           this.isDeleting = false;
         });
+    },
+    follow() {
+      this.isFollowSubmitting = true;
+      axios
+        .post(
+          `profiles/${this.author.username}/follow`,
+          {},
+          {
+            headers: {
+              authorization: "Token " + this.$store.state.authToken
+            }
+          }
+        )
+        .then(() => {
+          this.$emit("follow");
+          this.isFollowSubmitting = false;
+        })
+        .catch(() => {
+          this.isFollowSubmitting = false;
+        });
+    },
+    unfollow() {
+      this.isFollowSubmitting = true;
+      axios
+        .delete(`profiles/${this.author.username}/follow`, {
+          headers: {
+            authorization: "Token " + this.$store.state.authToken
+          }
+        })
+        .then(() => {
+          this.$emit("unfollow");
+          this.isFollowSubmitting = false;
+        })
+        .catch(() => {
+          this.isFollowSubmitting = false;
+        });
+    },
+    toggleFavorite() {
+      this.isFavoriteSubmitting = true;
+      if (this.favorited) {
+        axios
+          .delete(`articles/${this.slug}/favorite`, {
+            headers: {
+              authorization: "Token " + this.$store.state.authToken
+            }
+          })
+          .then(response => {
+            this.$emit("unfavorite", response.data.article.favoritesCount);
+            this.isFavoriteSubmitting = false;
+          })
+          .catch(() => {
+            this.isFavoriteSubmitting = false;
+          });
+      } else {
+        axios
+          .post(
+            `articles/${this.slug}/favorite`,
+            {},
+            {
+              headers: {
+                authorization: "Token " + this.$store.state.authToken
+              }
+            }
+          )
+          .then(response => {
+            this.$emit("favorite", response.data.article.favoritesCount);
+            this.isFavoriteSubmitting = false;
+          })
+          .catch(() => {
+            this.isFavoriteSubmitting = false;
+          });
+      }
     }
   }
 };

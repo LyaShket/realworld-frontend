@@ -13,6 +13,10 @@
           :favorited="favorited"
           :favoritesCount="favoritesCount"
           :slug="slug"
+          @favorite="favorite"
+          @unfavorite="unfavorite"
+          @follow="follow"
+          @unfollow="unfollow"
         />
       </div>
     </div>
@@ -46,6 +50,10 @@
           :favorited="favorited"
           :favoritesCount="favoritesCount"
           :slug="slug"
+          @favorite="favorite"
+          @unfavorite="unfavorite"
+          @follow="follow"
+          @unfollow="unfollow"
         />
       </div>
 
@@ -174,6 +182,22 @@ export default {
       .catch(() => {
         this.$router.push({ name: "home" });
       });
+  },
+  methods: {
+    favorite(favoritesCount) {
+      this.favorited = true;
+      this.favoritesCount = favoritesCount;
+    },
+    unfavorite(favoritesCount) {
+      this.favorited = false;
+      this.favoritesCount = favoritesCount;
+    },
+    follow() {
+      this.author.following = true;
+    },
+    unfollow() {
+      this.author.following = false;
+    }
   }
 };
 </script>
