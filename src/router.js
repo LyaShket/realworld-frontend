@@ -6,6 +6,7 @@ import AppHome from "@/views/Home";
 import AppEditor from "@/views/Editor";
 import AppSettings from "@/views/Settings";
 import AppArticle from "@/views/Article";
+import AppUser from "@/views/User";
 
 Vue.use(VueRouter);
 
@@ -43,7 +44,7 @@ const routes = [
   {
     path: "/@:username",
     name: "user",
-    component: null
+    component: AppUser
   },
   {
     path: "/article/:slug",

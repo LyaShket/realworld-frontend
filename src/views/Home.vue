@@ -50,15 +50,15 @@ export default {
       let pagesCountFloat = this.articlesCount / this.limit;
       let parsedPagesCountFloat = Number.parseFloat(pagesCountFloat);
 
-      let pagesCount = parsedPagesCountFloat.toFixed(0);
-      if (pagesCount > pagesCountFloat) {
+      let pagesCount = Number.parseInt(parsedPagesCountFloat.toFixed(0));
+      if (pagesCountFloat > pagesCount) {
         pagesCount += 1;
       }
       if (pagesCount > 50) {
         pagesCount = 50;
       }
 
-      return Number.parseInt(pagesCount);
+      return pagesCount;
     }
   },
   data() {
