@@ -113,15 +113,13 @@ export default {
   },
   watch: {
     articleListType(newValue) {
-      this.articles = null;
+      this.currentPageNumber = 1;
       if (newValue !== ARTICLE_LIST_TYPES.TAG) {
         this.tag = null;
       }
-      this.getArticles();
     },
     tag() {
-      this.articles = null;
-      this.getArticles();
+      this.currentPageNumber = 1;
     },
     currentPageNumber() {
       this.articles = null;

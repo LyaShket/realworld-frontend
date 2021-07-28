@@ -194,17 +194,15 @@ export default {
   },
   watch: {
     articleListType() {
-      this.articles = null;
-      this.getArticles();
+      this.currentPageNumber = 1;
+    },
+    username() {
+      this.currentPageNumber = 1;
+      this.getProfile();
     },
     currentPageNumber() {
       this.articles = null;
       this.getArticles();
-    },
-    username() {
-      this.articles = null;
-      this.getArticles();
-      this.getProfile();
     }
   }
 };
