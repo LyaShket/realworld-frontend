@@ -107,7 +107,7 @@
                 comment.author.username
               }}</a>
               <span class="date-posted ng-binding">{{
-                comment.createdAt
+                prettiefyDate(comment.createdAt)
               }}</span>
               <span class="mod-options">
                 <i
@@ -250,6 +250,17 @@ export default {
         .then(() => {
           this.comments = this.comments.filter(comment => comment.id !== id);
         });
+    },
+    prettiefyDate(isoDateString) {
+      const date = new Date(Date.parse(isoDateString));
+
+      const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+        date
+      );
+      const day = date.getDay();
+      const year = date.getFullYear();
+
+      return `${month} ${day}, ${year}`;
     }
   }
 };

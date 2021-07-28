@@ -26,7 +26,9 @@
             >
               {{ article.author.username }}
             </router-link>
-            <span class="date ng-binding">{{ article.createdAt }}</span>
+            <span class="date ng-binding">{{
+              prettiefyDate(article.createdAt)
+            }}</span>
           </div>
 
           <button
@@ -174,6 +176,17 @@ export default {
     },
     switchPage(pageNumber) {
       this.$emit("switch-page", pageNumber);
+    },
+    prettiefyDate(isoDateString) {
+      const date = new Date(Date.parse(isoDateString));
+
+      const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+        date
+      );
+      const day = date.getDay();
+      const year = date.getFullYear();
+
+      return `${month} ${day}, ${year}`;
     }
   }
 };

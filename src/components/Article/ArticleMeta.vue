@@ -19,7 +19,7 @@
       >
         {{ author.username }}
       </router-link>
-      <span class="date ng-binding">{{ createdAt }}</span>
+      <span class="date ng-binding">{{ prettiefyDate(createdAt) }}</span>
     </div>
 
     <!-- If current user is the author, show edit/delete buttons -->
@@ -224,6 +224,17 @@ export default {
             this.isFavoriteSubmitting = false;
           });
       }
+    },
+    prettiefyDate(isoDateString) {
+      const date = new Date(Date.parse(isoDateString));
+
+      const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+        date
+      );
+      const day = date.getDay();
+      const year = date.getFullYear();
+
+      return `${month} ${day}, ${year}`;
     }
   }
 };
