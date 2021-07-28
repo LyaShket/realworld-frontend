@@ -155,10 +155,15 @@ export default {
           }
         };
       }
-      axios.get(`profiles/${this.username}`, requestParams).then(response => {
-        this.profile = response.data.profile;
-        this.isProfileLoading = false;
-      });
+      axios
+        .get(`profiles/${this.username}`, requestParams)
+        .then(response => {
+          this.profile = response.data.profile;
+          this.isProfileLoading = false;
+        })
+        .catch(() => {
+          this.$router.push({ name: "home" });
+        });
     },
     switchPage(pageNumber) {
       this.currentPageNumber = pageNumber;
