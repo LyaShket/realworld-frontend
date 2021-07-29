@@ -55,10 +55,12 @@ export function postArticle(body, description, tagList, title) {
       .post(
         "articles",
         {
-          body: body,
-          description: description,
-          tagList: tagList,
-          title: title
+          article: {
+            body: body,
+            description: description,
+            tagList: tagList,
+            title: title
+          }
         },
         getRequestParams()
       )
@@ -73,10 +75,12 @@ export function updateArticle(slug, body, description, tagList, title) {
       .put(
         `articles/${slug}`,
         {
-          body: body,
-          description: description,
-          tagList: tagList,
-          title: title
+          article: {
+            body: body,
+            description: description,
+            tagList: tagList,
+            title: title
+          }
         },
         getRequestParams()
       )
