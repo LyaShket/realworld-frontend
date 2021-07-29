@@ -25,19 +25,13 @@
 </template>
 
 <script>
-import { getTags } from "@/api/api";
-
 export default {
   name: "AppPopularTags",
-  data() {
-    return {
-      tags: null
-    };
-  },
-  created() {
-    getTags().then(tags => {
-      this.tags = tags;
-    });
+  props: {
+    tags: {
+      // Array or null
+      required: true
+    }
   },
   methods: {
     setTag(tag) {

@@ -60,6 +60,7 @@
             :pagesCount="pagesCount"
             :currentPageNumber="currentPageNumber"
             @switch-page="switchPage"
+            :toggleFavorite="toggleFavorite"
           />
         </div>
 
@@ -77,7 +78,9 @@ import {
   getArticlesFavorited,
   getProfile,
   followUser,
-  unfollowUser
+  unfollowUser,
+  favoriteArticle,
+  unfavoriteArticle
 } from "@/api/api";
 import { ARTICLE_LIST_TYPES } from "@/constants";
 
@@ -190,6 +193,27 @@ export default {
         .catch(() => {
           this.isFollowSubmitting = false;
         });
+    },
+    toggleFavorite(toggleArticle) {
+      return new Promise((resolve, reject) => {
+        let promise;
+        if (toggleArticle.favorited) {
+          promise = unfavoriteArticle(toggleArticle.slug);
+        } else {
+          promise = favoriteArticle(toggleArticle.slug);
+        }
+        promise
+          .then(article => {
+            this.articles.map(a => {
+              if (a.slug === article.slug) {
+                a.favorited = article.favorited;
+                a.favoritesCount = article.favoritesCount;
+              }
+            });
+            resolve();
+          })
+          .catch(reject);
+      });
     }
   },
   watch: {

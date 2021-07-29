@@ -21,9 +21,10 @@
             :pagesCount="pagesCount"
             :currentPageNumber="currentPageNumber"
             @switch-page="switchPage"
+            :toggleFavorite="toggleFavorite"
           />
         </div>
-        <app-popular-tags @set-tag="setTag" />
+        <app-popular-tags :tags="tags" @set-tag="setTag" />
       </div>
     </div>
   </div>
@@ -36,7 +37,10 @@ import AppPopularTags from "@/components/Home/PopularTags";
 import {
   getArticlesGlobalFeed,
   getArticlesYourFeed,
-  getArticlesTag
+  getArticlesTag,
+  getTags,
+  favoriteArticle,
+  unfavoriteArticle
 } from "@/api/api";
 import { ARTICLE_LIST_TYPES } from "@/constants";
 
@@ -73,11 +77,16 @@ export default {
       articles: null,
 
       articlesCount: 0,
-      currentPageNumber: 1
+      currentPageNumber: 1,
+
+      tags: []
     };
   },
   created() {
     this.getArticles();
+    getTags().then(tags => {
+      this.tags = tags;
+    });
   },
   methods: {
     setArticleListType(type) {
@@ -101,14 +110,33 @@ export default {
           break;
       }
       promise.then(data => {
-        const articles = data.articles;
-        articles.map(article => (article.isWaitingToggle = false));
-        this.articles = articles;
+        this.articles = data.articles;
         this.articlesCount = data.articlesCount;
       });
     },
     switchPage(pageNumber) {
       this.currentPageNumber = pageNumber;
+    },
+    toggleFavorite(toggleArticle) {
+      return new Promise((resolve, reject) => {
+        let promise;
+        if (toggleArticle.favorited) {
+          promise = unfavoriteArticle(toggleArticle.slug);
+        } else {
+          promise = favoriteArticle(toggleArticle.slug);
+        }
+        promise
+          .then(article => {
+            this.articles.map(a => {
+              if (a.slug === article.slug) {
+                a.favorited = article.favorited;
+                a.favoritesCount = article.favoritesCount;
+              }
+            });
+            resolve();
+          })
+          .catch(reject);
+      });
     }
   },
   watch: {
