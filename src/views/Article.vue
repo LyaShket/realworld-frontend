@@ -99,13 +99,25 @@
               </p>
             </div>
             <div class="card-footer">
-              <a class="comment-author" href="#/@scammed">
+              <router-link
+                class="comment-author"
+                :to="{
+                  name: 'user',
+                  params: { username: comment.author.username }
+                }"
+              >
                 <img class="comment-author-img" :src="comment.author.image" />
-              </a>
+              </router-link>
               &nbsp;
-              <a class="comment-author ng-binding" href="#/@scammed">{{
-                comment.author.username
-              }}</a>
+              <router-link
+                class="comment-author"
+                :to="{
+                  name: 'user',
+                  params: { username: comment.author.username }
+                }"
+              >
+                {{ comment.author.username }}
+              </router-link>
               <span class="date-posted ng-binding">{{
                 prettiefyDate(comment.createdAt)
               }}</span>
