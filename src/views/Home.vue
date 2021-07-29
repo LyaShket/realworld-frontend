@@ -117,9 +117,13 @@ export default {
       if (newValue !== ARTICLE_LIST_TYPES.TAG) {
         this.tag = null;
       }
+      this.articles = null;
+      this.getArticles();
     },
     tag() {
       this.currentPageNumber = 1;
+      this.articles = null;
+      this.getArticles();
     },
     currentPageNumber() {
       this.articles = null;

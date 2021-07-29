@@ -195,10 +195,14 @@ export default {
   watch: {
     articleListType() {
       this.currentPageNumber = 1;
+      this.articles = null;
+      this.getArticles();
     },
     username() {
       this.currentPageNumber = 1;
+      this.articles = null;
       this.getProfile();
+      this.getArticles();
     },
     currentPageNumber() {
       this.articles = null;
