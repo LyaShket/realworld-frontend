@@ -8,7 +8,10 @@
             active: articleListType === $options.ARTICLE_LIST_TYPES.YOUR_FEED
           }"
           @click="setArticleListType($options.ARTICLE_LIST_TYPES.YOUR_FEED)"
-          :disabled="articleListType === $options.ARTICLE_LIST_TYPES.YOUR_FEED"
+          :disabled="
+            articleListType === $options.ARTICLE_LIST_TYPES.YOUR_FEED ||
+              isLoadingArticles
+          "
         >
           Your Feed
         </button>
@@ -21,7 +24,8 @@
           }"
           @click="setArticleListType($options.ARTICLE_LIST_TYPES.GLOBAL_FEED)"
           :disabled="
-            articleListType === $options.ARTICLE_LIST_TYPES.GLOBAL_FEED
+            articleListType === $options.ARTICLE_LIST_TYPES.GLOBAL_FEED ||
+              isLoadingArticles
           "
         >
           Global Feed
@@ -53,6 +57,11 @@ export default {
       // String or null
       required: false,
       default: null
+    },
+    isLoadingArticles: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   ARTICLE_LIST_TYPES,

@@ -9,7 +9,8 @@
           }"
           @click="setArticleListType($options.ARTICLE_LIST_TYPES.MY_ARTICLES)"
           :disabled="
-            articleListType === $options.ARTICLE_LIST_TYPES.MY_ARTICLES
+            articleListType === $options.ARTICLE_LIST_TYPES.MY_ARTICLES ||
+              isLoadingArticles
           "
         >
           My Articles
@@ -26,7 +27,9 @@
             setArticleListType($options.ARTICLE_LIST_TYPES.FAVORITED_ARTICLES)
           "
           :disabled="
-            articleListType === $options.ARTICLE_LIST_TYPES.FAVORITED_ARTICLES
+            articleListType ===
+              $options.ARTICLE_LIST_TYPES.FAVORITED_ARTICLES ||
+              isLoadingArticles
           "
         >
           Favorited Articles
@@ -45,6 +48,11 @@ export default {
     articleListType: {
       type: String,
       required: true
+    },
+    isLoadingArticles: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   ARTICLE_LIST_TYPES,

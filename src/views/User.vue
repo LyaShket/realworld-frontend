@@ -51,6 +51,7 @@
           <div class="articles-toggle">
             <app-tabs
               :articleListType="articleListType"
+              :isLoadingArticles="isLoadingArticles"
               @set-article-list-type="setArticleListType"
             />
           </div>
@@ -124,7 +125,9 @@ export default {
       profile: {},
       isProfileLoading: true,
 
-      isFollowSubmitting: false
+      isFollowSubmitting: false,
+
+      isLoadingArticles: false
     };
   },
   created() {
@@ -136,6 +139,7 @@ export default {
       this.articleListType = type;
     },
     getArticles() {
+      this.isLoadingArticles = true;
       let promise;
       switch (this.articleListType) {
         case ARTICLE_LIST_TYPES.MY_ARTICLES:
@@ -150,10 +154,9 @@ export default {
           break;
       }
       promise.then(data => {
-        const articles = data.articles;
-        articles.map(article => (article.isWaitingToggle = false));
-        this.articles = articles;
+        this.articles = data.articles;
         this.articlesCount = data.articlesCount;
+        this.isLoadingArticles = false;
       });
     },
     getProfile() {

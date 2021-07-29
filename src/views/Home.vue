@@ -14,6 +14,7 @@
           <app-tabs
             :articleListType="articleListType"
             :tag="tag"
+            :isLoadingArticles="isLoadingArticles"
             @set-article-list-type="setArticleListType"
           />
           <app-article-list
@@ -79,7 +80,9 @@ export default {
       articlesCount: 0,
       currentPageNumber: 1,
 
-      tags: []
+      tags: [],
+
+      isLoadingArticles: false
     };
   },
   created() {
@@ -97,6 +100,7 @@ export default {
       this.tag = tag;
     },
     getArticles() {
+      this.isLoadingArticles = true;
       let promise;
       switch (this.articleListType) {
         case ARTICLE_LIST_TYPES.GLOBAL_FEED:
@@ -112,6 +116,7 @@ export default {
       promise.then(data => {
         this.articles = data.articles;
         this.articlesCount = data.articlesCount;
+        this.isLoadingArticles = false;
       });
     },
     switchPage(pageNumber) {
