@@ -214,7 +214,7 @@ export function favoriteArticle(slug) {
 export function unfavoriteArticle(slug) {
   return new Promise(resolve => {
     axios
-      .delete(`articles/${slug}/favorite`, {}, getRequestParams())
+      .delete(`articles/${slug}/favorite`, getRequestParams())
       .then(response => resolve(response.data.article));
   });
 }
