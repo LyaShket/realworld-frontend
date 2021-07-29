@@ -204,18 +204,20 @@ export function unfollowUser(username) {
 }
 
 export function favoriteArticle(slug) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     axios
       .post(`articles/${slug}/favorite`, {}, getRequestParams())
-      .then(response => resolve(response.data.article));
+      .then(response => resolve(response.data.article))
+      .catch(reject);
   });
 }
 
 export function unfavoriteArticle(slug) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     axios
       .delete(`articles/${slug}/favorite`, getRequestParams())
-      .then(response => resolve(response.data.article));
+      .then(response => resolve(response.data.article))
+      .catch(reject);
   });
 }
 
