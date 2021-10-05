@@ -111,14 +111,18 @@ export default {
         this.$router.push({ name: "home" });
       } else {
         if (this.$route.params.slug) {
-          getArticle(this.$route.params.slug).then(article => {
-            this.body = article.body;
-            this.description = article.description;
-            this.tagList = article.tagList;
-            this.title = article.title;
+          getArticle(this.$route.params.slug)
+            .then(article => {
+              this.body = article.body;
+              this.description = article.description;
+              this.tagList = article.tagList;
+              this.title = article.title;
 
-            this.isLoading = false;
-          });
+              this.isLoading = false;
+            })
+            .catch(() => {
+              this.$router.push({ name: "home" });
+            });
         } else {
           this.isLoading = false;
         }

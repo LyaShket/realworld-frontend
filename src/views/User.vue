@@ -153,11 +153,13 @@ export default {
           );
           break;
       }
-      promise.then(data => {
-        this.articles = data.articles;
-        this.articlesCount = data.articlesCount;
-        this.isLoadingArticles = false;
-      });
+      promise
+        .then(data => {
+          this.articles = data.articles;
+          this.articlesCount = data.articlesCount;
+          this.isLoadingArticles = false;
+        })
+        .catch(() => (this.isLoadingArticles = false));
     },
     getProfile() {
       getProfile(this.username)

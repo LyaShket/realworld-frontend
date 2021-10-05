@@ -19,7 +19,7 @@
       >
         {{ author.username }}
       </router-link>
-      <span class="date ng-binding">{{ prettiefyDate(createdAt) }}</span>
+      <span class="date ng-binding">{{ prettifyDate(createdAt) }}</span>
     </div>
 
     <!-- If current user is the author, show edit/delete buttons -->
@@ -34,7 +34,7 @@
       <button
         class="btn btn-outline-danger btn-sm"
         :disabled="isDeleting"
-        @click="deleteArticle"
+        @click="onDeleteArticle"
       >
         <i class="ion-trash-a"></i> Delete Article
       </button>
@@ -89,7 +89,8 @@
 </template>
 
 <script>
-import axios from "@/api/axios";
+import { deleteArticle, favoriteArticle, unfavoriteArticle } from "@/api/api";
+import { prettifyDate } from "@/utils";
 
 export default {
   name: "AppArticleMeta",
@@ -138,32 +139,24 @@ export default {
     };
   },
   methods: {
-    deleteArticle() {
+    prettifyDate,
+    onDeleteArticle() {
       this.isDeleting = true;
-      axios
-        .delete(`articles/${this.$route.params.slug}`, {
-          headers: {
-            authorization: "Token " + this.$store.state.authToken
-          }
-        })
-        .then(() => {
-          this.$router.push({ name: "home" });
-        })
-        .catch(() => {
-          this.isDeleting = false;
-        });
+      deleteArticle(this.$route.params.slug)
+        .then(() => this.$router.push({ name: "home" }))
+        .catch(() => (this.isDeleting = false));
     },
     onFollow() {
       this.isFollowSubmitting = true;
-      this.follow(this.author.username).then(() => {
-        this.isFollowSubmitting = false;
-      });
+      this.follow(this.author.username)
+        .then(() => (this.isFollowSubmitting = false))
+        .catch(() => (this.isFollowSubmitting = false));
     },
     onUnfollow() {
       this.isFollowSubmitting = true;
-      this.unfollow(this.author.username).then(() => {
-        this.isFollowSubmitting = false;
-      });
+      this.unfollow(this.author.username)
+        .then(() => (this.isFollowSubmitting = false))
+        .catch(() => (this.isFollowSubmitting = false));
     },
     toggleFavorite() {
       if (this.currentUser === null) {
@@ -172,49 +165,20 @@ export default {
       }
       this.isFavoriteSubmitting = true;
       if (this.favorited) {
-        axios
-          .delete(`articles/${this.slug}/favorite`, {
-            headers: {
-              authorization: "Token " + this.$store.state.authToken
-            }
-          })
-          .then(response => {
-            this.$emit("unfavorite", response.data.article.favoritesCount);
+        unfavoriteArticle(this.slug)
+          .then(article => {
+            this.$emit("unfavorite", article.favoritesCount);
             this.isFavoriteSubmitting = false;
           })
-          .catch(() => {
-            this.isFavoriteSubmitting = false;
-          });
+          .catch(() => (this.isFavoriteSubmitting = false));
       } else {
-        axios
-          .post(
-            `articles/${this.slug}/favorite`,
-            {},
-            {
-              headers: {
-                authorization: "Token " + this.$store.state.authToken
-              }
-            }
-          )
-          .then(response => {
-            this.$emit("favorite", response.data.article.favoritesCount);
+        favoriteArticle(this.slug)
+          .then(article => {
+            this.$emit("favorite", article.favoritesCount);
             this.isFavoriteSubmitting = false;
           })
-          .catch(() => {
-            this.isFavoriteSubmitting = false;
-          });
+          .catch(() => (this.isFavoriteSubmitting = false));
       }
-    },
-    prettiefyDate(isoDateString) {
-      const date = new Date(Date.parse(isoDateString));
-
-      const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-        date
-      );
-      const day = date.getDay();
-      const year = date.getFullYear();
-
-      return `${month} ${day}, ${year}`;
     }
   }
 };

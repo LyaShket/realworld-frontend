@@ -119,7 +119,7 @@
                 {{ comment.author.username }}
               </router-link>
               <span class="date-posted ng-binding">{{
-                prettiefyDate(comment.createdAt)
+                prettifyDate(comment.createdAt)
               }}</span>
               <span class="mod-options">
                 <i
@@ -152,6 +152,7 @@ import {
   followUser,
   unfollowUser
 } from "@/api/api";
+import { prettifyDate } from "@/utils";
 
 export default {
   name: "AppArticle",
@@ -197,15 +198,16 @@ export default {
 
         this.isLoading = false;
       })
-      .catch(() => {
-        this.$router.push({ name: "home" });
-      });
-    getComments(this.$route.params.slug).then(comments => {
-      this.comments = comments;
-      this.isCommentsLoading = false;
-    });
+      .catch(() => this.$router.push({ name: "home" }));
+    getComments(this.$route.params.slug)
+      .then(comments => {
+        this.comments = comments;
+        this.isCommentsLoading = false;
+      })
+      .catch(() => (this.isCommentsLoading = false));
   },
   methods: {
+    prettifyDate,
     favorite(favoritesCount) {
       this.favorited = true;
       this.favoritesCount = favoritesCount;
@@ -249,17 +251,6 @@ export default {
       deleteComment(this.slug, id).then(() => {
         this.comments = this.comments.filter(comment => comment.id !== id);
       });
-    },
-    prettiefyDate(isoDateString) {
-      const date = new Date(Date.parse(isoDateString));
-
-      const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-        date
-      );
-      const day = date.getDay();
-      const year = date.getFullYear();
-
-      return `${month} ${day}, ${year}`;
     }
   }
 };

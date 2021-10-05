@@ -21,7 +21,7 @@
           {{ article.author.username }}
         </router-link>
         <span class="date ng-binding">{{
-          prettiefyDate(article.createdAt)
+          prettifyDate(article.createdAt)
         }}</span>
       </div>
 
@@ -64,6 +64,8 @@
 </template>
 
 <script>
+import { prettifyDate } from "@/utils";
+
 export default {
   name: "app-article",
   props: {
@@ -82,17 +84,7 @@ export default {
     };
   },
   methods: {
-    prettiefyDate(isoDateString) {
-      const date = new Date(Date.parse(isoDateString));
-
-      const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-        date
-      );
-      const day = date.getDay();
-      const year = date.getFullYear();
-
-      return `${month} ${day}, ${year}`;
-    },
+    prettifyDate,
     onToggleFavorite(toggleArticle) {
       this.isFavoriting = true;
       this.toggleFavorite(toggleArticle)

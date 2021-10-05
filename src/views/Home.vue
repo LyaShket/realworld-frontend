@@ -87,9 +87,9 @@ export default {
   },
   created() {
     this.getArticles();
-    getTags().then(tags => {
-      this.tags = tags;
-    });
+    getTags()
+      .then(tags => (this.tags = tags))
+      .catch(() => (this.tags = null));
   },
   methods: {
     setArticleListType(type) {
@@ -113,11 +113,13 @@ export default {
           promise = getArticlesTag(this.limit, this.offset, this.tag);
           break;
       }
-      promise.then(data => {
-        this.articles = data.articles;
-        this.articlesCount = data.articlesCount;
-        this.isLoadingArticles = false;
-      });
+      promise
+        .then(data => {
+          this.articles = data.articles;
+          this.articlesCount = data.articlesCount;
+          this.isLoadingArticles = false;
+        })
+        .catch(() => (this.isLoadingArticles = false));
     },
     switchPage(pageNumber) {
       this.currentPageNumber = pageNumber;

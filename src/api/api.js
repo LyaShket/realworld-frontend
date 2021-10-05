@@ -13,18 +13,20 @@ function getRequestParams() {
 }
 
 export function getArticle(slug) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     axios
       .get(`articles/${slug}`, getRequestParams())
-      .then(response => resolve(response.data.article));
+      .then(response => resolve(response.data.article))
+      .catch(reject);
   });
 }
 
 export function getComments(slug) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     axios
       .get(`articles/${slug}/comments`, getRequestParams())
-      .then(response => resolve(response.data.comments));
+      .then(response => resolve(response.data.comments))
+      .catch(reject);
   });
 }
 
@@ -70,7 +72,7 @@ export function postArticle(body, description, tagList, title) {
 }
 
 export function updateArticle(slug, body, description, tagList, title) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     axios
       .put(
         `articles/${slug}`,
@@ -84,34 +86,38 @@ export function updateArticle(slug, body, description, tagList, title) {
         },
         getRequestParams()
       )
-      .then(response => resolve(response.data.article));
+      .then(response => resolve(response.data.article))
+      .catch(error => reject(error.response.data.errors));
   });
 }
 
 export function getArticlesGlobalFeed(limit, offset) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     axios
       .get(`articles?limit=${limit}&offset=${offset}`, getRequestParams())
-      .then(response => resolve(response.data));
+      .then(response => resolve(response.data))
+      .catch(reject);
   });
 }
 
 export function getArticlesYourFeed(limit, offset) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     axios
       .get(`articles/feed?limit=${limit}&offset=${offset}`, getRequestParams())
-      .then(response => resolve(response.data));
+      .then(response => resolve(response.data))
+      .catch(reject);
   });
 }
 
 export function getArticlesTag(limit, offset, tag) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     axios
       .get(
         `articles?limit=${limit}&offset=${offset}&tag=${tag}`,
         getRequestParams()
       )
-      .then(response => resolve(response.data));
+      .then(response => resolve(response.data))
+      .catch(reject);
   });
 }
 
@@ -155,24 +161,26 @@ export function updateUserSettings(bio, email, image, username, password) {
 }
 
 export function getArticlesMy(author, limit, offset) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     axios
       .get(
         `articles?author=${author}&limit=${limit}&offset=${offset}`,
         getRequestParams()
       )
-      .then(response => resolve(response.data));
+      .then(response => resolve(response.data))
+      .catch(reject);
   });
 }
 
 export function getArticlesFavorited(username, limit, offset) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     axios
       .get(
         `articles?favorited=${username}&limit=${limit}&offset=${offset}`,
         getRequestParams()
       )
-      .then(response => resolve(response.data));
+      .then(response => resolve(response.data))
+      .catch(reject);
   });
 }
 
@@ -222,8 +230,11 @@ export function unfavoriteArticle(slug) {
 }
 
 export function getTags() {
-  return new Promise(resolve => {
-    axios.get("tags").then(response => resolve(response.data.tags));
+  return new Promise((resolve, reject) => {
+    axios
+      .get("tags")
+      .then(response => resolve(response.data.tags))
+      .catch(reject);
   });
 }
 
@@ -232,6 +243,15 @@ export function getCurrentUser() {
     axios
       .get("user", getRequestParams())
       .then(response => resolve(response.data.user))
+      .catch(reject);
+  });
+}
+
+export function deleteArticle(slug) {
+  return new Promise((resolve, reject) => {
+    axios
+      .delete(`articles/${slug}`, getRequestParams())
+      .then(resolve)
       .catch(reject);
   });
 }
