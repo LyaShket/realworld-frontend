@@ -15,7 +15,7 @@
       No articles are here... yet.
     </div>
 
-    <nav class="ng-isolate-scope" v-if="articles">
+    <nav class="ng-isolate-scope" v-if="articles && pagesCountList > 1">
       <ul class="pagination">
         <li
           class="page-item ng-scope"
